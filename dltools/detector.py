@@ -40,9 +40,11 @@ class ObjectDetector(object):
     """
 
     def __init__(self, model, learning_rate=1e-4, batch_size=32, epoch=2, model_check_point=True):
-        self.model_ = self._build_model(model)
         self.params_model = self._init_params_model()
         self.params_model.lr = learning_rate
+
+        self.model_ = self._build_model(model)
+
         self.batch_size = batch_size
         self.epoch = epoch
         self.model_check_point = model_check_point
@@ -156,7 +158,7 @@ class ObjectDetector(object):
         # load the parameter for the SSD model
         optimizer = Adam(lr=self.params_model.lr)
 
-        model.compile(optimizer=optimizer, loss=params_model.keras_loss)
+        model.compile(optimizer=optimizer, loss=self.params_model.keras_loss)
 
         return model
 
