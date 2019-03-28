@@ -1,0 +1,12 @@
+scipy
+numpy
+jupyter
+pandas
+astropy
+scikit-learn>=0.19
+keras>=2.*
+h5py
+tensorflow
+matplotlib
+torch
+torchvision
