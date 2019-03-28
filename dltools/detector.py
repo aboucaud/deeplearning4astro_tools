@@ -40,8 +40,7 @@ class ObjectDetector(object):
     """
 
     def __init__(self, model, lr=1e-4, batch_size=32, epoch=2, model_check_point=True):
-        self.lr = lr
-        self.model_ = self._build_model(model)
+        self.model_ = self._build_model(model, lr)
         self.params_model_ = self._init_params_model()
         self.batch_size = batch_size
         self.epoch = epoch
@@ -146,7 +145,7 @@ class ObjectDetector(object):
         params_model.sigma_noise = 0.01             # random noise added before last layer (0 = no noise added)
 
         # optimizer parameters
-        params_model.lr = self.lr
+        params_model.lr = 1.e-4
         params_model.beta_1 = 0.9
         params_model.beta_2 = 0.999
         params_model.epsilon = 1e-08
@@ -172,12 +171,12 @@ class ObjectDetector(object):
 
         return params_model
 
-    def _build_model(self, model):
+    def _build_model(self, model, lr):
 
         # load the parameter for the SSD model
         params_model = self._init_params_model()
 
-        optimizer = Adam(lr=params_model.lr)
+        optimizer = Adam(lr=lr)
 
         model.compile(optimizer=optimizer, loss=params_model.keras_loss)
 
