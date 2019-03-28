@@ -39,12 +39,10 @@ class ObjectDetector(object):
 
     """
 
-    def __init__(self, model, learning_rate=1e-4, batch_size=32, epoch=2, model_check_point=True):
-        self.params_model = self._init_params_model()
-        self.params_model.lr = learning_rate
-
+    def __init__(self, model, lr=1e-4, batch_size=32, epoch=2, model_check_point=True):
+        self.lr = lr
         self.model_ = self._build_model(model)
-
+        self.params_model_ = self._init_params_model()
         self.batch_size = batch_size
         self.epoch = epoch
         self.model_check_point = model_check_point
@@ -128,8 +126,27 @@ class ObjectDetector(object):
     def _init_params_model():
         params_model = Bunch()
 
+        # image and class parameters
+        params_model.img_rows = 128
+        params_model.img_cols = 128
+        params_model.img_channels = 1
+
+        # architecture params
+        params_model.output_channels = 1            # size of the output in depth
+        params_model.depth = 16                     # depth of all hidden layers
+        params_model.n_layers = 6                   # number of layers before last
+        params_model.conv_size0 = (3, 3)            # kernel size of first layer
+        params_model.conv_size = (3, 3)             # kernel size of intermediate layers
+        params_model.last_conv_size = (3, 3)        # kernel size of last layer
+        params_model.activation = 'relu'            # activation between layers
+        params_model.last_activation = 'sigmoid'    # final activation (sigmoid nice if binary objective)
+        params_model.initialization = 'he_normal'   # weight initialization
+        params_model.constraint = None              # kernel constraints (None, nonneg, unitnorm, maxnorm)
+        params_model.dropout_rate = 0.0             # percentage of weights not updated (0 = no dropout)
+        params_model.sigma_noise = 0.01             # random noise added before last layer (0 = no noise added)
+
         # optimizer parameters
-        params_model.lr = 1e-4
+        params_model.lr = self.lr
         params_model.beta_1 = 0.9
         params_model.beta_2 = 0.999
         params_model.epsilon = 1e-08
@@ -142,6 +159,8 @@ class ObjectDetector(object):
         params_model.early_stopping = True
         params_model.es_patience = 12
         params_model.es_min_delta = 0.001
+
+        
 
         params_model.reduce_learning_rate = True
         params_model.lr_patience = 5
@@ -156,9 +175,11 @@ class ObjectDetector(object):
     def _build_model(self, model):
 
         # load the parameter for the SSD model
-        optimizer = Adam(lr=self.params_model.lr)
+        params_model = self._init_params_model()
 
-        model.compile(optimizer=optimizer, loss=self.params_model.keras_loss)
+        optimizer = Adam(lr=params_model.lr)
+
+        model.compile(optimizer=optimizer, loss=params_model.keras_loss)
 
         return model
 
@@ -175,24 +196,24 @@ class ObjectDetector(object):
                                 period=1,
                                 verbose=1))
         # add early stopping
-        if self.params_model.early_stopping:
+        if self.params_model_.early_stopping:
             callbacks.append(
                 EarlyStopping(monitor='val_loss',
-                              min_delta=self.params_model.es_min_delta,
-                              patience=self.params_model.es_patience,
+                              min_delta=self.params_model_.es_min_delta,
+                              patience=self.params_model_.es_patience,
                               verbose=1))
 
         # reduce learning-rate when reaching plateau
-        if self.params_model.reduce_learning_rate:
+        if self.params_model_.reduce_learning_rate:
             callbacks.append(
                 ReduceLROnPlateau(monitor='val_loss',
-                                  factor=self.params_model.lr_factor,
-                                  patience=self.params_model.lr_patience,
-                                  cooldown=self.params_model.lr_cooldown,
-                                  # min_delta=self.params_model.lr_min_delta,
+                                  factor=self.params_model_.lr_factor,
+                                  patience=self.params_model_.lr_patience,
+                                  cooldown=self.params_model_.lr_cooldown,
+                                  # min_delta=self.params_model_.lr_min_delta,
                                   verbose=1))
 
-        if self.params_model.tensorboard:
+        if self.params_model_.tensorboard:
             callbacks.append(TensorBoard(log_dir="./logs")) 
 
         return callbacks
