@@ -173,24 +173,24 @@ class ObjectDetector(object):
                                 period=1,
                                 verbose=1))
         # add early stopping
-        if self.params_model_.early_stopping:
+        if self.params_model.early_stopping:
             callbacks.append(
                 EarlyStopping(monitor='val_loss',
-                              min_delta=self.params_model_.es_min_delta,
-                              patience=self.params_model_.es_patience,
+                              min_delta=self.params_model.es_min_delta,
+                              patience=self.params_model.es_patience,
                               verbose=1))
 
         # reduce learning-rate when reaching plateau
-        if self.params_model_.reduce_learning_rate:
+        if self.params_model.reduce_learning_rate:
             callbacks.append(
                 ReduceLROnPlateau(monitor='val_loss',
-                                  factor=self.params_model_.lr_factor,
-                                  patience=self.params_model_.lr_patience,
-                                  cooldown=self.params_model_.lr_cooldown,
-                                  # min_delta=self.params_model_.lr_min_delta,
+                                  factor=self.params_model.lr_factor,
+                                  patience=self.params_model.lr_patience,
+                                  cooldown=self.params_model.lr_cooldown,
+                                  # min_delta=self.params_model.lr_min_delta,
                                   verbose=1))
 
-        if self.params_model_.tensorboard:
+        if self.params_model.tensorboard:
             callbacks.append(TensorBoard(log_dir="./logs")) 
 
         return callbacks
