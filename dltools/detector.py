@@ -154,7 +154,7 @@ class ObjectDetector(object):
     def _build_model(self, model):
 
         # load the parameter for the SSD model
-        optimizer = Adam(lr=self.params_model_.lr)
+        optimizer = Adam(lr=self.params_model.lr)
 
         model.compile(optimizer=optimizer, loss=params_model.keras_loss)
 
