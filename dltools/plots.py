@@ -20,3 +20,43 @@ def plot_results(model, img, y_true):
     
     for axes in ax.flat:
         axes.axis('off')
+
+
+def plot_random_results(model, X_test, y_test, n_gal=5):
+    import matplotlib.pyplot as plt
+    idx = np.random.randint(0, len(y_test), size=n_gal)
+    X = X_test[idx]
+    if X.ndim == 3:
+        X = np.expand_dims(X, -1)
+    y_true = y_test[idx]
+    y_pred = model.predict(X)
+
+    titles = [
+        'blend',
+        'true segmentation',
+        'output',
+        'output thresholded',
+    ]
+    fig_size = (10, 12)
+    fig, ax = plt.subplots(nrows=n_gal, ncols=4, figsize=fig_size)
+    for i in range(n_gal):
+        img = np.squeeze(X[i])
+        yt = np.squeeze(y_true[i])
+        yp = np.squeeze(y_pred[i])
+        ax[i, 0].imshow(img)
+        ax[i, 1].imshow(yt)
+        ax[i, 2].imshow(yp)
+        ax[i, 3].imshow(yp.round())
+        if i == 0:
+            for idx, a in enumerate(ax[i]):
+                a.set_title(titles[idx])
+        for a in ax[i]:
+            a.set_axis_off()
+
+def plot_history(history):
+    import matplotlib.pyplot as plt
+    plt.semilogy(history.epoch, history.history['loss'], label='loss')
+    plt.semilogy(history.epoch, history.history['val_loss'], label='val_loss')
+    plt.title('Training performance')
+    plt.xlim(1, None)
+    plt.legend()
