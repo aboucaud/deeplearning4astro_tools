@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 
 from sklearn.utils import Bunch
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
-from keras.optimizers import Adam
-from keras import backend as K
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
+from tensorflow.keras.optimizers import Adam
 
 from dltools.batch import BatchGeneratorBuilder
 from dltools.metric import iou
