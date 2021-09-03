@@ -58,8 +58,8 @@ class ObjectDetector(object):
         callbacks = self._build_callbacks()
 
         # fit the model
-        history = self.model_.fit_generator(
-            generator=train_generator,
+        history = self.model_.fit(
+            x=train_generator,
             steps_per_epoch=ceil(n_train_samples / self.batch_size),
             epochs=self.epoch,
             callbacks=callbacks,
