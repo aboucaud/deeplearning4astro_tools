@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 
 from sklearn.utils import Bunch
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
-from keras.optimizers import Adam
-from keras import backend as K
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
+from tensorflow.keras.optimizers import Adam
 
 from dltools.batch import BatchGeneratorBuilder
 from dltools.metric import iou
@@ -59,8 +58,8 @@ class ObjectDetector(object):
         callbacks = self._build_callbacks()
 
         # fit the model
-        history = self.model_.fit_generator(
-            generator=train_generator,
+        history = self.model_.fit(
+            x=train_generator,
             steps_per_epoch=ceil(n_train_samples / self.batch_size),
             epochs=self.epoch,
             callbacks=callbacks,
