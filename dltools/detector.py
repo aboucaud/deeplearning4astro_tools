@@ -21,11 +21,13 @@ class ObjectDetector(object):
     ----------
     batch_size : int, optional
         The batch size used during training. Set by default to 32 samples.
-
-    epoch : int, optional
-        The number of epoch for which the model will be trained. Set by default
+    learning_rate : float, optional
+        The learning rate of the Adam optimizer
+    batch_size : int, optional
+        The batch size for the fit
+    epochs : int, optional
+        The number of epochs for which the model will be trained. Set by default
         to 50 epochs.
-
     model_check_point : bool, optional
         Whether to create a callback for intermediate models.
 
@@ -39,11 +41,11 @@ class ObjectDetector(object):
 
     """
 
-    def __init__(self, model, lr=1e-4, batch_size=32, epoch=2, model_check_point=True):
+    def __init__(self, model, learning_rate=1e-4, batch_size=32, epochs=2, model_check_point=True):
         self.model_ = self._build_model(model, lr)
         self.params_model_ = self._init_params_model()
         self.batch_size = batch_size
-        self.epoch = epoch
+        self.epochs = epochs
         self.model_check_point = model_check_point
 
     def fit(self, X, y):
@@ -61,7 +63,7 @@ class ObjectDetector(object):
         history = self.model_.fit(
             x=train_generator,
             steps_per_epoch=ceil(n_train_samples / self.batch_size),
-            epochs=self.epoch,
+            epochs=self.epochs,
             callbacks=callbacks,
             validation_data=val_generator,
             validation_steps=ceil(n_val_samples / self.batch_size))
@@ -159,8 +161,6 @@ class ObjectDetector(object):
         params_model.es_patience = 12
         params_model.es_min_delta = 0.001
 
-        
-
         params_model.reduce_learning_rate = True
         params_model.lr_patience = 5
         params_model.lr_factor = 0.5
@@ -171,12 +171,12 @@ class ObjectDetector(object):
 
         return params_model
 
-    def _build_model(self, model, lr):
+    def _build_model(self, model, learning_rate):
 
         # load the parameter for the SSD model
         params_model = self._init_params_model()
 
-        optimizer = Adam(lr=lr)
+        optimizer = Adam(learning_rate=learning_rate)
 
         model.compile(optimizer=optimizer, loss=params_model.keras_loss)
 
