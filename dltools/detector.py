@@ -42,7 +42,7 @@ class ObjectDetector(object):
     """
 
     def __init__(self, model, learning_rate=1e-4, batch_size=32, epochs=2, model_check_point=True):
-        self.model_ = self._build_model(model, lr)
+        self.model_ = self._build_model(model, learning_rate)
         self.params_model_ = self._init_params_model()
         self.batch_size = batch_size
         self.epochs = epochs
